@@ -1,0 +1,11 @@
+Times ran: 90000
+Average finalChanges: 63.2958
+Average minimumsFound: -4.48272
+With smallestMinimum: -4.68623 and biggestMinimum: -4.06131
+Average averageChanges: 12.1476
+Average averageMinimums: -3.02884
+Average totalTimes: 1506793 ( 1 seconds )
+With smallestTotalTime: 918980 ( 0 seconds )
+biggestTotalTime: 2660177 ( 2 seconds )
+absoluteTotalTime: 1084891670( 135 seconds )
+Average averageTimes: 11864

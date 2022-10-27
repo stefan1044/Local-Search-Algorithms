@@ -1,164 +1,279 @@
 #pragma once
-#include <algorithm>
+#include <chrono>
 #include <cstdio>
-#include "utils.h"
+#include <vector>
 #include "generators.h"
-
+#include "printerFunctions.h"
+#include "utils.h"
 
 #define HCBI 1
-
+#define HCWI 2
+#define HCFI 3
 
 using namespace std;
 
 struct HCValues
 {
-
-	const int size, length;
+	const unsigned size, timesToRun;
 	Function function;
-	const double stepSize;
-	HCValues(const int size,const int length,const Function function,const double stepSize):
-		size(size),length(length),function(function),stepSize(stepSize) {}
+	const int stepSize;
+	HCValues(const unsigned size,const unsigned timesToRun, const Function function,const int stepSize) :
+		size(size), timesToRun(timesToRun), function(function), stepSize(stepSize) {}
 };
 
-double bestValue = DBL_MAX;
 
-void hillClimbingBestImprovement(int startNode[], const int& size, const int& nodeLength, const Function& function);
-void runHillClimber(const HCValues& values, const int& hillClimberType);
+void hillClimbingBestImprovement(const vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
+	currentBestValue);
+void hillClimbingFirstImprovement(vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
+	currentBestValue);
+void hillClimbingWorstImprovement(const vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
+	currentBestValue);
+void runHillClimber(const HCValues& values, const int hillClimberType, PrintUnit& printUnit);
 
 
-void hillClimbingBestImprovement(int startNode[], const int& size, const int& nodeLength, const Function& function) {
+void hillClimbingBestImprovement(const vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
+	currentBestValue) {
 	//initial prints
-	/*
-	printf("Started new hiilClimbing with startNode: ");
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < nodeLength; j++)
-			printf("%d", startNode[i * nodeLength + j]);
-		printf(" ");
-	}
-	printf("\n");
-	*/
-	//***************************************************************
-
-	//Generate all neighbours
-	int** neighbours = new int* [size];
-	for (int i = 0; i < size; i++)
-		neighbours[i] = new int[nodeLength * nodeLength];
-
-	for (int i = 0; i < size; i++) {
-		int* temp = new int[nodeLength * nodeLength];
-		temp = generateNeighbourhood(startNode, i * nodeLength, (i + 1) * nodeLength);
-		copy(temp, temp + nodeLength * nodeLength, neighbours[i]);
-		/*
-		printf("N[%d]:", i);
-		for (int j = 0; j < nodeLength; j++) {
-			for (int k = 0; k < nodeLength; k++) {
-				printf("%d", neighbours[i][j * nodeLength + k]);
-			}
-			printf(" ");
-		}
-		printf("\n");
-		*/
-	}
+	/*printf("Started new Hill Climbing from node:");
+	printVector(startNode);*/
 
 	//Evaluate local values
-	bool local = false;
-	auto values = new double[size];
-	for (int i = 0; i < size; i++) {
-		values[i] = convertToDomain(nodeToNumber(startNode, i * nodeLength, (i + 1) * nodeLength), function, nodeLength);
-	}
-	double currentEval = function.func(values, size);
-	if (currentEval < bestValue)
-		bestValue = currentEval;
+	double currentEval = evaluate(startNode, nodeLength, function);
+	if (currentEval < currentBestValue)
+		currentBestValue = currentEval;
+	//printf("Current Eval:%lf\n", currentEval);
 
-	//local value
-	/*
-	for (int i = 0; i < size; i++) {
-		printf("V[%d]:%lf ", i, values[i]);
-	}
-	printf("Eval: %lf\n", currentEval);
-	*/
-	//************************************************************************
+	//Generate all neighbours
+	const vector<vector<bool>> neighbours = generateNeighbourhood(startNode);
 
-
-	double** neighbourValues = new double* [nodeLength];
-
-	for (int i = 0; i < nodeLength; i++) {
-		neighbourValues[i] = new double[size];
-		for (int j = 0; j < size; j++) {
-			neighbourValues[i][j] = convertToDomain(nodeToNumber(neighbours[j], i * nodeLength, (i + 1) * nodeLength), function, nodeLength);
+	//print all neighbours
+	/*{
+		printf("Neighbours:\n");
+		unsigned i = 0;
+		for (auto& var : neighbours) {
+			printf("neightbours[%d]:", i);
+			printVector(var);
+			i++;
 		}
 	}
-	//neighbourhood values
-	/*
-	printf("Neighbourhood Values\n");
-	for (int i = 0; i < nodeLength; i++) {
-		for (int j = 0; j < size; j++) {
-			printf("N[%d][%d]:%lf ", i, j, neighbourValues[i][j]);
-		}
-		printf("\n");
-	}
-	*/
-	//************************************************************************************************
+	printf("Generated all neighbours\n");*/
 
-	int positionOfSmallestNeighbour = -1;
-	for (int i = 0; i < nodeLength; i++) {
-		double neighbourEval = function.func(neighbourValues[i], size);
 
-		//printf("Eval[%d]:%lf\n", i, neighbourEval);
-		if (neighbourEval < currentEval) {
-			currentEval = neighbourEval;
-			positionOfSmallestNeighbour = i;
+	//Neighbourhood values
+	auto neighbourValues = vector<double>();
+	int index = 0;
+	for (const auto& var : neighbours) {
+		neighbourValues.push_back(evaluate(var, nodeLength, function));
+	}
+
+	/*printf("NeighbourValues:\n");
+	printVector(neighbourValues);
+	printf("\n");*/
+
+
+	//Calculate bestImprovement
+	int positionOfBestImprovement = -1;
+	{
+		int i = 0;
+		for (const auto& var : neighbourValues) {
+			if (var < currentEval) {
+				currentEval = var;
+				positionOfBestImprovement = i;
+			}
+			i++;
 		}
 	}
+
 	//post-search results
-	//printf("positionOfSmallestNeighbour:%d\n", positionOfSmallestNeighbour);
-	//**************************************************************************************************
 
-	if (positionOfSmallestNeighbour == -1) {
-		local = true;
-	}
-	else {
-		int* temp = new int[size * nodeLength];
-		for (int i = 0; i < size; i++) {
-			copy(neighbours[i] + positionOfSmallestNeighbour * nodeLength,
-				neighbours[i] + (positionOfSmallestNeighbour + 1) * nodeLength,
-				temp + i * nodeLength);
-		}
-		/*
-		printf("Temp is:");
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < nodeLength; j++)
-				printf("%d", temp[i * nodeLength + j]);
-			printf(" ");
-		}
-		printf("\n");
-
-		printf("\n");
-		*/
-		hillClimbingBestImprovement(temp, size, nodeLength, function);
+	if (positionOfBestImprovement != -1) {
+		hillClimbingBestImprovement(neighbours[positionOfBestImprovement], size, nodeLength, function, currentBestValue);
 	}
 
 }
 
-void runHillClimber(const HCValues& values, const int& hillClimberType) {
+void hillClimbingFirstImprovement(vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
+	currentBestValue) {
+	//initial prints
+	/*printf("Started new Hill Climbing from node:");
+	printVector(startNode);*/
 
-	if(hillClimberType == HCBI) {
-		const auto startArray = new int[values.size * values.length];
-		memset(startArray, 0, values.size * values.length);
 
-		const auto step = generateStep(values.function, values.stepSize, values.length);
+	const double currentEval = evaluate(startNode, nodeLength, function);
+	if (currentEval < currentBestValue)
+		currentBestValue = currentEval;
 
-		auto timesToRun = fabs(values.function.lowerBound) + fabs(values.function.upperBound);
-		timesToRun /= values.stepSize;
-		timesToRun = static_cast<int>(timesToRun);
-
-		while (timesToRun > 0) {
-			hillClimbingBestImprovement(startArray, values.size, values.length, values.function);
-			generateProgressive(startArray, values.size, values.length, step);
-
-			timesToRun--;
+	bool local = false;
+	unsigned index = 0;
+	while (index < startNode.size()) {
+		startNode[index] = !startNode[index];
+		if (evaluate(startNode, nodeLength, function) < currentEval) {
+			local = true;
+			break;
 		}
 
-		printf("Minimum found is:%lf", bestValue);
+		startNode[index] = !startNode[index];
+		index++;
 	}
+
+
+	if (local == true) {
+		hillClimbingFirstImprovement(startNode, size, nodeLength, function, currentBestValue);
+	}
+
+}
+
+
+void hillClimbingWorstImprovement(const vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
+	currentBestValue) {
+	//initial prints
+	/*printf("Started new Hill Climbing from node:");
+	printVector(startNode);*/
+
+	//Evaluate local values
+	const double currentEval = evaluate(startNode, nodeLength, function);
+	if (currentEval < currentBestValue)
+		currentBestValue = currentEval;
+	//printf("Current Eval:%lf\n", currentEval);
+
+	//Generate all neighbours
+	const vector<vector<bool>> neighbours = generateNeighbourhood(startNode);
+
+	//print all neighbours
+	/*{
+		printf("Neighbours:\n");
+		unsigned i = 0;
+		for (auto& var : neighbours) {
+			printf("neightbours[%d]:", i);
+			printVector(var);
+			i++;
+		}
+	}
+	printf("Generated all neighbours\n");*/
+
+
+
+	//Neighbourhood values
+	auto neighbourValues = vector<double>();
+	int index = 0;
+	for (const auto& var : neighbours) {
+		neighbourValues.push_back(evaluate(var, nodeLength, function));
+	}
+
+	/*printf("NeighbourValues:\n");
+	printVector(neighbourValues);
+	printf("\n");*/
+
+
+	//Calculate bestImprovement
+	int positionOfWorstImprovement = -1;
+	{
+		int i = 0;
+		double worstImprovement = DBL_MIN;
+		for (const auto& var : neighbourValues) {
+			if (var < currentEval && var>worstImprovement) {
+				worstImprovement = var;
+				positionOfWorstImprovement = i;
+			}
+			i++;
+		}
+	}
+
+	//post-search results
+	if (positionOfWorstImprovement != -1) {
+		hillClimbingWorstImprovement(neighbours[positionOfWorstImprovement], size, nodeLength, function, currentBestValue);
+	}
+
+}
+
+void runHillClimber(const HCValues& values, const int hillClimberType, PrintUnit& printUnit) {
+	double currentBestValue = DBL_MAX;
+	double overallBestValue = DBL_MAX;
+	unsigned bestFoundAt;
+
+	auto _N = abs((values.function.lowerBound - values.function.upperBound) * pow(10, values.stepSize));
+	const auto nodeLength = static_cast<unsigned>(ceil(log2(_N)));
+
+	auto startArray = vector<bool>(values.size * nodeLength, 0);
+
+	//printf("_N is %lf, nodeLength is %d\n", _N, nodeLength);
+	unsigned timesToRun = 1;
+	randomizeCandidate(startArray, values.size, nodeLength);
+
+	chrono::time_point<chrono::steady_clock> startTime;
+	chrono::time_point<chrono::steady_clock> stopTime;
+	startTime = chrono::high_resolution_clock::now();
+	printUnit.timeChanges.push_back(startTime);
+	if (hillClimberType == HCBI) {
+		while (timesToRun <= values.timesToRun) {
+			hillClimbingBestImprovement(startArray, values.size, nodeLength, values.function, currentBestValue);
+			stopTime = chrono::high_resolution_clock::now();
+			printUnit.timeChanges.push_back(stopTime);
+
+			randomizeCandidate(startArray, values.size, nodeLength);
+
+			if (currentBestValue < overallBestValue) {
+				overallBestValue = currentBestValue;
+				bestFoundAt = timesToRun;
+				printUnit.madeChanges.push_back(timesToRun);
+			}
+
+			/*printf("Remaining timesToRun:%d with minimum found:%lf and overAllMinimum:%lf found at %dth run\n",
+				timesToRun, currentHCBestValue, overallHCBestValue, bestFoundAtHC);*/
+			printUnit.minimumsFound.push_back(currentBestValue);
+			currentBestValue = DBL_MAX;
+			timesToRun++;
+		}
+		//printf("Minimum found is:%lf at %dth run", overallHCBestValue, bestFoundAtHC);
+		printUnit.minimumFound = overallBestValue; printUnit.finalChange = bestFoundAt;
+	}
+	else if (hillClimberType == HCWI) {
+		while (timesToRun <= values.timesToRun) {
+			hillClimbingWorstImprovement(startArray, values.size, nodeLength, values.function, currentBestValue);
+			stopTime = chrono::high_resolution_clock::now();
+			printUnit.timeChanges.push_back(stopTime);
+
+			randomizeCandidate(startArray, values.size, nodeLength);
+
+			if (currentBestValue < overallBestValue) {
+				overallBestValue = currentBestValue;
+				bestFoundAt = timesToRun;
+				printUnit.madeChanges.push_back(timesToRun);
+			}
+
+			/*printf("Remaining timesToRun:%d with minimum found:%lf and overAllMinimum:%lf found at %dth run\n",
+				timesToRun, currentHCBestValue, overallHCBestValue, bestFoundAtHC);*/
+			printUnit.minimumsFound.push_back(currentBestValue);
+			currentBestValue = DBL_MAX;
+			timesToRun++;
+		}
+		//printf("Minimum found is:%lf at %dth run", overallHCBestValue, bestFoundAtHC);
+		printUnit.minimumFound = overallBestValue; printUnit.finalChange = bestFoundAt;
+	}
+	else if (hillClimberType == HCFI) {
+		while (timesToRun <= values.timesToRun) {
+			hillClimbingFirstImprovement(startArray, values.size, nodeLength, values.function, currentBestValue);
+			stopTime = chrono::high_resolution_clock::now();
+			printUnit.timeChanges.push_back(stopTime);
+
+			randomizeCandidate(startArray, values.size, nodeLength);
+
+			if (currentBestValue < overallBestValue) {
+				overallBestValue = currentBestValue;
+				bestFoundAt = timesToRun;
+				printUnit.madeChanges.push_back(timesToRun);
+			}
+
+			/*printf("Remaining timesToRun:%d with minimum found:%lf and overAllMinimum:%lf found at %dth run\n",
+				timesToRun, currentHCBestValue, overallHCBestValue, bestFoundAtHC);*/
+			printUnit.minimumsFound.push_back(currentBestValue);
+			currentBestValue = DBL_MAX;
+			timesToRun++;
+		}
+		/*printf("Minimum found is:%lf at %dth run", overallHCBestValue, bestFoundAtHC);*/
+		printUnit.minimumFound = overallBestValue; printUnit.finalChange = bestFoundAt;
+	}
+
+	stopTime = chrono::high_resolution_clock::now();
+	printUnit.timeChanges.push_back(stopTime);
 }

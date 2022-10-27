@@ -132,8 +132,16 @@
   <ItemGroup>
     <ClInclude Include="generators.h" />
     <ClInclude Include="hillClimbers.h" />
+    <ClInclude Include="printerFunctions.h" />
+    <ClInclude Include="randomBool.h" />
     <ClInclude Include="rangeFunctions.h" />
+    <ClInclude Include="readerFunctions.h" />
+    <ClInclude Include="simulatedAnnealing.h" />
     <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="input.in" />
+    <None Include="output.out" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

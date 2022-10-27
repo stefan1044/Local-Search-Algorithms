@@ -32,5 +32,21 @@
     <ClInclude Include="hillClimbers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="randomBool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="simulatedAnnealing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="printerFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="readerFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="input.in" />
+    <None Include="output.out" />
   </ItemGroup>
 </Project>
