@@ -44,29 +44,29 @@ void simulatedAnnealingFIHC(vector<bool>& startNode, const unsigned& size, const
 		currentBestValue = currentEval;
 
 	bool local = false;
-	unsigned index = 0;
+	unsigned index = startNode.size();
 	double localEval;
-	while (index < startNode.size()) {
+	while (index > 0 ) {
 		startNode[index] = !startNode[index];
 		localEval = evaluate(startNode, nodeLength, function);
 		if (localEval < currentEval) {
 			local = true;
 			break;
 		}
-		auto a = dis(gen);
-		auto b = exp(-abs(localEval - currentEval) / temp.temperature);
-		if (a < b) {
-			local = true;
-			break;
+		if (temp.temperature > 0.00001) {
+			if (dis(gen) < exp(-(localEval - currentEval) / temp.temperature)) {
+				local = true;
+				break;
+			}
 		}
 
 		startNode[index] = !startNode[index];
-		index++;
+		index--;
 	}
 
 
 	temp.temperature *= temp.coolingConstant;
-	//printf("%lf ", temperature);
+	//printf("%lf ", temp.temperature);
 	if (local == true) {
 		simulatedAnnealingFIHC(startNode, size, nodeLength, function, currentBestValue, temp);
 	}

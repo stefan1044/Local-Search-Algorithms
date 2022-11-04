@@ -1,0 +1,12 @@
+Times ran: 64000
+Average position of final chnage: 64.1367
+Average of lowest minimums found: -10876.3
+With smallestMinimum: -11148.9 and biggestMinimum: -10595.7
+Standard deviation: 120.957
+Average averageChanges: 12.0457
+Average averageMinimums: -9419.34
+Average totalTimes: 178731800 ( 178 seconds )
+With smallestTotalTime: 172725081 ( 172 seconds )
+biggestTotalTime: 200007511 ( 200 seconds )
+absoluteTotalTime: 5724730570( 715 seconds )
+Average averageTimes: 1 seconds 

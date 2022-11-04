@@ -1,0 +1,12 @@
+Times ran: 16000
+Average position of final chnage: 1
+Average of lowest minimums found: 0
+With smallestMinimum: 0 and biggestMinimum: 0
+Standard deviation: 0
+Average averageChanges: 1
+Average averageMinimums: 0
+Average totalTimes: 375600301 ( 375 seconds )
+With smallestTotalTime: 173539841 ( 173 seconds )
+biggestTotalTime: 177076588 ( 177 seconds )
+absoluteTotalTime: 1405042745( 175 seconds )
+Average averageTimes: 2 seconds 

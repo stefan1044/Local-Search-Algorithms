@@ -25,7 +25,7 @@ struct HCValues
 void hillClimbingBestImprovement(const vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
 	currentBestValue);
 void hillClimbingFirstImprovement(vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
-	currentBestValue);
+                                  currentBestValue, const double& currentEval);
 void hillClimbingWorstImprovement(const vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
 	currentBestValue);
 void runHillClimber(const HCValues& values, const int hillClimberType, PrintUnit& printUnit);
@@ -93,32 +93,22 @@ void hillClimbingBestImprovement(const vector<bool>& startNode, const unsigned& 
 }
 
 void hillClimbingFirstImprovement(vector<bool>& startNode, const unsigned& size, const unsigned& nodeLength, const Function& function, double&
-	currentBestValue) {
-	//initial prints
-	/*printf("Started new Hill Climbing from node:");
-	printVector(startNode);*/
+                                  currentBestValue, const double& currentEval) {
 
-
-	const double currentEval = evaluate(startNode, nodeLength, function);
-	if (currentEval < currentBestValue)
-		currentBestValue = currentEval;
-
-	bool local = false;
 	unsigned index = 0;
+	double tempEval;
 	while (index < startNode.size()) {
 		startNode[index] = !startNode[index];
-		if (evaluate(startNode, nodeLength, function) < currentEval) {
-			local = true;
-			break;
+		tempEval = evaluate(startNode, nodeLength, function);
+		if (tempEval < currentEval) {
+			if (currentEval < currentBestValue)
+				currentBestValue = currentEval;
+			hillClimbingFirstImprovement(startNode, size, nodeLength, function, currentBestValue, tempEval);
+			return;
 		}
 
 		startNode[index] = !startNode[index];
 		index++;
-	}
-
-
-	if (local == true) {
-		hillClimbingFirstImprovement(startNode, size, nodeLength, function, currentBestValue);
 	}
 
 }
@@ -252,7 +242,8 @@ void runHillClimber(const HCValues& values, const int hillClimberType, PrintUnit
 	}
 	else if (hillClimberType == HCFI) {
 		while (timesToRun <= values.timesToRun) {
-			hillClimbingFirstImprovement(startArray, values.size, nodeLength, values.function, currentBestValue);
+			double currentEval = DBL_MAX;
+			hillClimbingFirstImprovement(startArray, values.size, nodeLength, values.function, currentBestValue, currentEval);
 			stopTime = chrono::high_resolution_clock::now();
 			printUnit.timeChanges.push_back(stopTime);
 

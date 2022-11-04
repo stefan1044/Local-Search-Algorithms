@@ -1,11 +1,12 @@
-Times ran: 60000
-Average finalChanges: 61.0708
-Average minimumsFound: 12.9828
-With smallestMinimum: 4.2207 and biggestMinimum: 20.1804
-Average averageChanges: 12.5266
-Average averageMinimums: 31.7598
-Average totalTimes: 15511118 ( 15 seconds )
-With smallestTotalTime: 12607055 ( 12 seconds )
-biggestTotalTime: 20056819 ( 20 seconds )
-absoluteTotalTime: 7445337042( 930 seconds )
-Average averageTimes: 122134
+Times ran: 64000
+Average position of final chnage: 60.4492
+Average of lowest minimums found: 8.47467
+With smallestMinimum: 4.2207 and biggestMinimum: 11.1854
+Standard deviation: 1.49292
+Average averageChanges: 12.3542
+Average averageMinimums: 31.7406
+Average totalTimes: 15728315 ( 15 seconds )
+With smallestTotalTime: 13872797 ( 13 seconds )
+biggestTotalTime: 19523108 ( 19 seconds )
+absoluteTotalTime: 532593745( 66 seconds )
+Average averageTimes: 0 seconds 

@@ -14,41 +14,12 @@ using namespace std;
 void runThread(const HCValues hcValues, const SAValues saValues, PrintUnit puValues, const int hillClimbingTypes, const int
                exercisesTypes, const unsigned timesToRun, const char threadNumber);
 
+void readData();
+
 
 int main() {
 
-	/*readData("BIHC","DeJong's","5");
-	readData("BIHC", "DeJong's", "10");
-	readData("BIHC", "Schwefel's", "5");
-	readData("BIHC", "Schwefel's", "10");
-	readData("BIHC", "Rastrigin's", "5");
-	readData("BIHC", "Rastrigin's", "10");
-	readData("BIHC", "Michalewicz's", "5");
-	readData("BIHC", "Michalewicz's", "10");
-
-	readData("WIHC","DeJong's","5");
-	readData("WIHC", "DeJong's", "10");
-	readData("WIHC", "Schwefel's", "5");
-	readData("WIHC", "Schwefel's", "10");
-	readData("WIHC", "Rastrigin's", "5");
-	readData("WIHC", "Rastrigin's", "10");
-	readData("WIHC", "Michalewicz's", "5");
-	readData("WIHC", "Michalewicz's", "10");
-
-
-	readData("WIHC", "Schwefel's", "30");
-
-	readData("FIHC","DeJong's","5");
-	readData("FIHC", "DeJong's", "10");
-	readData("FIHC", "Schwefel's", "5");
-	readData("FIHC", "Schwefel's", "10");
-	readData("FIHC", "Rastrigin's", "5");
-	readData("FIHC", "Rastrigin's", "10");
-	readData("FIHC", "Michalewicz's", "5");
-	readData("FIHC", "Michalewicz's", "10");
-
-
-	exit(0);*/
+	readData();
 
 	const Function exercise1(-5.12, 5.12, deJongs);
 	const Function exercise2(-500, 500, schwefels);
@@ -94,7 +65,7 @@ int main() {
 			if (exercise == 3) {
 				const HCValues hc(dimensions, timesToRun, exercise3, stepSize);
 				hcValues.push_back(hc);
-				const SAValues sa(dimensions, timesToRun, exercise4, stepSize, temperature, coolingConstant);
+				const SAValues sa(dimensions, timesToRun, exercise3, stepSize, temperature, coolingConstant);
 				saValues.push_back(sa);
 			}
 			if (exercise == 4) {
@@ -141,7 +112,63 @@ void runThread(const HCValues hcValues, const SAValues saValues, PrintUnit puVal
 	}
 }
 
+void readData() {
+	readData("BIHC", "DeJong's", "5");
+	readData("BIHC", "DeJong's", "10");
+	readData("BIHC", "DeJong's", "30");
+	readData("BIHC", "Schwefel's", "5");
+	readData("BIHC", "Schwefel's", "10");
+	readData("BIHC", "Schwefel's", "30");
+	readData("BIHC", "Rastrigin's", "5");
+	readData("BIHC", "Rastrigin's", "10");
+	readData("BIHC", "Rastrigin's", "30");
+	readData("BIHC", "Michalewicz's", "5");
+	readData("BIHC", "Michalewicz's", "10");
+	readData("BIHC", "Michalewicz's", "30");
 
+	readData("WIHC", "DeJong's", "5");
+	readData("WIHC", "DeJong's", "10");
+	readData("WIHC", "DeJong's", "30");
+	readData("WIHC", "Schwefel's", "5");
+	readData("WIHC", "Schwefel's", "10");
+	readData("WIHC", "Schwefel's", "30");
+	readData("WIHC", "Rastrigin's", "5");
+	readData("WIHC", "Rastrigin's", "10");
+	readData("WIHC", "Rastrigin's", "30");
+	readData("WIHC", "Michalewicz's", "5");
+	readData("WIHC", "Michalewicz's", "10");
+	readData("WIHC", "Michalewicz's", "30");
+
+
+	readData("FIHC", "DeJong's", "5");
+	readData("FIHC", "DeJong's", "10");
+	readData("FIHC", "DeJong's", "30");
+	readData("FIHC", "Schwefel's", "5");
+	readData("FIHC", "Schwefel's", "10");
+	readData("FIHC", "Schwefel's", "30");
+	readData("FIHC", "Rastrigin's", "5");
+	readData("FIHC", "Rastrigin's", "10");
+	readData("FIHC", "Rastrigin's", "30");
+	readData("FIHC", "Michalewicz's", "5");
+	readData("FIHC", "Michalewicz's", "10");
+	readData("FIHC", "Michalewicz's", "30");
+
+	readData("SAFI1070", "DeJong's", "5");
+	readData("SAFI1070", "Schwefel's", "5");
+	readData("SAFI1070", "Rastrigin's", "5");
+	readData("SAFI1070", "Michalewicz's", "5");
+	readData("SAFI1070", "DeJong's", "10");
+	readData("SAFI1070", "Schwefel's", "10");
+	readData("SAFI1070", "Rastrigin's", "10");
+	readData("SAFI1070", "Michalewicz's", "10");
+	readData("SAFI1070", "DeJong's", "30");
+	readData("SAFI1070", "Schwefel's", "30");
+	readData("SAFI1070", "Rastrigin's", "30");
+	readData("SAFI1070", "Michalewicz's", "30");
+
+
+	exit(0);
+}
 
 
 

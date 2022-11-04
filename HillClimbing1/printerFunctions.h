@@ -44,7 +44,7 @@ public:
 		if (hillClimbingType == 0) {
 			sprintf_s(text, "Running Simulated Annealing %d times with %d dimensions on function %s with temperature %lf and cooling constant %lf\n\0",
 				timesToRun, size, typeOfFunc, temperature, coolingConstant);
-			sprintf_s(fileName, "%s%s%d\0", "SAFI", typeOfFunc, size);
+			sprintf_s(fileName, "%s%d%d%s%d\0", "SAFI",(int)(temperature), (int)(coolingConstant*100) ,typeOfFunc, size);
 		}
 		else if (hillClimbingType == 1) {
 			sprintf_s(text, "Running Best-Improvement Hill-Climbing %d times with %d dimensions on function %s\n\0",
